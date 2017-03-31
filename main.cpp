@@ -138,7 +138,7 @@ void wyszukajwliscie(item *first)
     }
 }
 
-void wstaw_tr(lisc *obecny, int szukana, lisc *rodzic)
+void dodaj_tr(lisc *obecny, int szukana, lisc *rodzic)
 {
     if(obecny == NULL)
     {
@@ -154,9 +154,9 @@ void wstaw_tr(lisc *obecny, int szukana, lisc *rodzic)
     else
         {
             if(szukana<obecny->wartosc)
-                wstaw_tr(obecny->lewy,szukana,obecny);
+                dodaj_tr(obecny->lewy,szukana,obecny);
             else
-                wstaw_tr(obecny->prawy,szukana,obecny);
+                dodaj_tr(obecny->prawy,szukana,obecny);
         }
 }
 
@@ -169,9 +169,53 @@ void drzewo_tr(int A[], lisc *korzen)
     for(int i=1; i<n; i++)
     {
         obecny=korzen;
-        wstaw_tr(obecny,A[i],obecny);
+        dodaj_tr(obecny,A[i],obecny);
     }
 }
+
+int znajdz_tr(lisc *korzen, int szukana)
+{
+    lisc *obecny;
+    obecny=korzen;
+    while(obecny!=NULL)
+    {
+        if(obecny->wartosc==szukana) return 1;
+        else
+        {
+            if(obecny->wartosc>szukana) obecny=obecny->lewy;
+            else obecny=obecny->prawy;
+        }
+    }
+    return 0;
+}
+
+void znajdz_wszystkie_tr(lisc *dziecko,lisc *rodzic, lisc *korzen)
+{
+    int a;
+    if(dziecko == NULL) return;
+    else
+    {
+        znajdz_wszystkie_tr(dziecko->lewy,dziecko,korzen);
+        a=znajdz_tr(korzen,dziecko->wartosc);
+        znajdz_wszystkie_tr(dziecko->prawy,dziecko,korzen);
+    }
+}
+
+void wysokosc_tr(lisc *dziecko, lisc *rodzic, lisc *korzen, int &h)
+{
+    int h1=0, h2=0;
+    if(dziecko == NULL) return;
+    else
+    {
+        wysokosc_tr(dziecko->lewy,dziecko,korzen,h1);
+        h1++;
+        wysokosc_tr(dziecko->prawy,dziecko,korzen,h2);
+        h2++;
+        if(h1>h2) h=h1;
+        else h=h2;
+    }
+}
+
 int main()
 {
 
@@ -207,5 +251,10 @@ int main()
     wsk=&korzen;
     cout<<endl;
     printBT("", "", wsk);
+    znajdz_wszystkie_tr(&korzen, &korzen, &korzen);
+    cout<<"wysokosc to: ";
+    int h=0;
+    wysokosc_tr(&korzen,&korzen,&korzen,h);
+    cout<<h;
     return 0;
 }

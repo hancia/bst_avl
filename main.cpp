@@ -4,6 +4,12 @@
 using namespace std;
 int n=10;
 int zakres=40;
+
+struct item
+{
+    int wartosc;
+    item* wsk;
+};
 void stworz_tablice(int A[])
 {
    int T[zakres];
@@ -44,15 +50,33 @@ int szukanie_pol(int szukana, int A[], int p, int k)
     if(A[s]==szukana) return s;
     else
     {
-        if(A[s]>szukana) szukanie_pol(szukana,A,s,k);
-        else szukanie_pol(szukana,A,p,s);
+        if(s<p||s>k)
+        return -1;
+        else
+        {
+            if(A[s]<szukana) return szukanie_pol(szukana,A,s+1,k);
+            else return szukanie_pol(szukana,A,p,s-1);
+        }
     }
 }
-void tablica(int A[])
+void sortowanietab(int A[], int B[])
 {
-    int B[n];
     for(int i=0; i<n; i++) B[i]=A[i];
-    quicksort(A,0,n-1);
+    quicksort(B,0,n-1);
+}
+
+void wyszukajwtab(int B[])
+{
+    int a;
+    for(int i=0; i<n; i++)
+    {
+        cout<<B[i]<<" ";
+    }
+    for(int i=0; i<n; i++)
+    {
+        a=szukanie_pol(B[i],B,0,n-1);
+        cout<<a<<endl;
+    }
 }
 int main()
 {
@@ -61,9 +85,14 @@ int main()
     double koniec;
     stworz_tablice(A);
     clock_t start = clock();
-    tablica(A);
+    int B[n];
+    sortowanietab(A,B);
     koniec=clock()-start;
     for(int i=0; i<n; i++) cout<<A[i]<<" ";
     cout<<endl<<"czas tworzenia talicy B wynosi "<<koniec;
+    start=clock();
+    wyszukajwtab(B);
+    koniec=clock()-start;
+    cout<<endl<<"czas znajdowania elementow w talicy B wynosi "<<koniec;
     return 0;
 }

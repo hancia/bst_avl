@@ -4,12 +4,42 @@
 using namespace std;
 int n=10;
 int zakres=40;
+ string cr, cl, cp;
+
+
 
 struct item
 {
     int wartosc;
     item* wsk;
 };
+
+struct lisc
+{
+    int wartosc;
+    lisc* lewy;
+    lisc* prawy;
+};
+
+ void printBT(string sp, string sn, lisc * v)
+ {
+ 	string s;
+
+ 	if (v)
+ 	{
+ 		s = sp;
+ 		if (sn == cr) s[s.length() - 2] = ' ';
+ 		printBT(s + cp, cr, v->prawy);
+
+ 		s = s.substr(0, sp.length() - 2);
+ 		cout << s << sn << v->wartosc << endl;
+
+ 		s = sp;
+ 		if (sn == cl) s[s.length() - 2] = ' ';
+ 		printBT(s + cp, cl, v->lewy);
+ 	}
+}
+
 void stworz_tablice(int A[])
 {
    int T[zakres];
@@ -107,14 +137,55 @@ void wyszukajwliscie(item *first)
         szukana=szukana->wsk;
     }
 }
+
+void wstaw_tr(lisc *obecny, int szukana, lisc *rodzic)
+{
+    if(obecny == NULL)
+    {
+        lisc *next= new lisc;
+        next->wartosc=szukana;
+        next->lewy=NULL;
+        next->prawy=NULL;
+        if(rodzic->wartosc>next->wartosc)
+            rodzic->lewy=next;
+        else
+            rodzic->prawy=next;
+    }
+    else
+        {
+            if(szukana<obecny->wartosc)
+                wstaw_tr(obecny->lewy,szukana,obecny);
+            else
+                wstaw_tr(obecny->prawy,szukana,obecny);
+        }
+}
+
+void drzewo_tr(int A[], lisc *korzen)
+{
+    korzen->wartosc=A[0];
+    korzen->lewy=NULL;
+    korzen->prawy=NULL;
+    lisc* obecny;
+    for(int i=1; i<n; i++)
+    {
+        obecny=korzen;
+        wstaw_tr(obecny,A[i],obecny);
+    }
+}
 int main()
 {
+
+  cr = cl = cp = "  ";
+  cr[0] = 218; cr[1] = 196;
+  cl[0] = 192; cl[1] = 196;
+  cp[0] = 179;
     srand(time(NULL));
-    int A[n];
+    int A[n], B[n];;
     double koniec;
+    item first;
+    lisc korzen;
     stworz_tablice(A);
     clock_t start = clock();
-    int B[n];
     sortowanietab(A,B);
     koniec=clock()-start;
     for(int i=0; i<n; i++) cout<<A[i]<<" ";
@@ -124,7 +195,6 @@ int main()
     koniec=clock()-start;
     cout<<endl<<"czas znajdowania elementow w talicy B wynosi "<<koniec;
     start=clock();
-    item first;
     stworzliste(A,&first);
     koniec=clock()-start;
     cout<<endl<<"czas tworzenia listy wynosi "<<koniec;
@@ -132,5 +202,10 @@ int main()
     wyszukajwliscie(&first);
     koniec=clock()-start;
     cout<<endl<<"czas szukania w liœcie wynosi "<<koniec;
+    drzewo_tr(A,&korzen);
+    lisc *wsk;
+    wsk=&korzen;
+    cout<<endl;
+    printBT("", "", wsk);
     return 0;
 }

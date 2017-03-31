@@ -70,12 +70,41 @@ void wyszukajwtab(int B[])
     int a;
     for(int i=0; i<n; i++)
     {
-        cout<<B[i]<<" ";
-    }
-    for(int i=0; i<n; i++)
-    {
         a=szukanie_pol(B[i],B,0,n-1);
-        cout<<a<<endl;
+    }
+}
+
+void stworzliste(int A[], item *first)
+{
+    first->wartosc=A[0];
+    first->wsk=NULL;
+    for(int i=1; i<n; i++)
+    {
+        item *next= new item;
+        next->wartosc=A[i];
+        next->wsk=NULL;
+        first->wsk=next;
+        first=next;
+    }
+}
+void wyszukajwliscie(item *first)
+{
+    item *szukana, *obecna;
+    int a;
+    szukana=first;
+    while(szukana!=NULL)
+    {
+        obecna=first;
+        while(obecna!=NULL)
+        {
+            if(obecna=szukana)
+            {
+                obecna=NULL;
+            }
+            else
+                obecna=obecna->wsk;
+        }
+        szukana=szukana->wsk;
     }
 }
 int main()
@@ -94,5 +123,14 @@ int main()
     wyszukajwtab(B);
     koniec=clock()-start;
     cout<<endl<<"czas znajdowania elementow w talicy B wynosi "<<koniec;
+    start=clock();
+    item first;
+    stworzliste(A,&first);
+    koniec=clock()-start;
+    cout<<endl<<"czas tworzenia listy wynosi "<<koniec;
+    start=clock();
+    wyszukajwliscie(&first);
+    koniec=clock()-start;
+    cout<<endl<<"czas szukania w liœcie wynosi "<<koniec;
     return 0;
 }

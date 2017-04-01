@@ -1,10 +1,9 @@
 #include <iostream>
 #include <ctime>
 #include <cstdlib>
+#include <fstream>
 using namespace std;
-int n=10;
-int zakres=40;
- string cr, cl, cp;
+int n=32000;
 
 
 
@@ -21,38 +20,20 @@ struct lisc
     lisc* prawy;
 };
 
- void printBT(string sp, string sn, lisc * v)
- {
- 	string s;
-
- 	if (v)
- 	{
- 		s = sp;
- 		if (sn == cr) s[s.length() - 2] = ' ';
- 		printBT(s + cp, cr, v->prawy);
-
- 		s = s.substr(0, sp.length() - 2);
- 		cout << s << sn << v->wartosc << endl;
-
- 		s = sp;
- 		if (sn == cl) s[s.length() - 2] = ' ';
- 		printBT(s + cp, cl, v->lewy);
- 	}
-}
 
 void stworz_tablice(int A[])
 {
-   int T[zakres];
-    for(int i=0; i<zakres; i++)
+   int T[n];
+    for(int i=0; i<n; i++)
     {
         T[i]=1;
     }
     for(int i=0; i<n; i++)
     {
-        A[i]=rand()%zakres;
+        A[i]=rand()%n;
         while(T[A[i]]!=1)
         {
-            A[i]=rand()%zakres;
+            A[i]=rand()%n;
         }
         T[A[i]]=0;
     }
@@ -127,7 +108,7 @@ void wyszukajwliscie(item *first)
         obecna=first;
         while(obecna!=NULL)
         {
-            if(obecna=szukana)
+            if(obecna==szukana)
             {
                 obecna=NULL;
             }
@@ -267,68 +248,84 @@ void drzewo_tb(int C[],lisc *korzen2)
 {
     drzewo_tr(C,korzen2);
 }
-
+void wyswietl_preorder(lisc *obecny)
+{
+    if(obecny==NULL) return;
+    else
+    {
+        cout<<obecny->wartosc<<" ";
+        wyswietl_preorder(obecny->lewy);
+        wyswietl_preorder(obecny->prawy);
+    }
+}
 int main()
 {
-
-  cr = cl = cp = "  ";
-  cr[0] = 218; cr[1] = 196;
-  cl[0] = 192; cl[1] = 196;
-  cp[0] = 179;
     srand(time(NULL));
     int A[n], B[n], C[n];
     double koniec;
     item first;
     lisc korzen,korzen2;
+
+    cout<<"ilosc_danych: "<<n;
+
+
+    //pomiar dla tablicy
     stworz_tablice(A);
     clock_t start = clock();
     sortowanietab(A,B);
-    koniec=clock()-start;
-    for(int i=0; i<n; i++) cout<<A[i]<<" ";
-    cout<<endl<<"czas tworzenia talicy B wynosi "<<koniec;
+    koniec=(clock()-start)/(double)CLOCKS_PER_SEC;
+    cout<<endl<<"tworzenie_tablicy_B "<<koniec;
+
     start=clock();
     wyszukajwtab(B);
-    koniec=clock()-start;
-    cout<<endl<<"czas znajdowania elementow w talicy B wynosi "<<koniec;
+    koniec=(clock()-start)/(double)CLOCKS_PER_SEC;
+    cout<<endl<<"znajdowanie_w_tablicy_B "<<koniec;
+
+
+    //pomiar dla listy
     start=clock();
     stworzliste(A,&first);
-    koniec=clock()-start;
-    cout<<endl<<"czas tworzenia listy wynosi "<<koniec;
+    koniec=(clock()-start)/(double)CLOCKS_PER_SEC;
+    cout<<endl<<"tworzenie_listy "<<koniec;
+
     start=clock();
     wyszukajwliscie(&first);
-    koniec=clock()-start;
-    cout<<endl<<"czas szukania w liœcie wynosi "<<koniec;
+    koniec=(clock()-start)/(double)CLOCKS_PER_SEC;
+    cout<<endl<<"szukanie_w_liscie "<<koniec;
+
+
+    //pomiar dla drzewa tr
+    start=clock();
     drzewo_tr(A,&korzen);
-    lisc *wsk;
-    wsk=&korzen;
-    cout<<endl;
-    printBT("", "", wsk);
+    koniec=(clock()-start)/(double)CLOCKS_PER_SEC;
+    cout<<endl<<"tworzenie_tr "<<koniec;
+
+    start=clock();
     znajdz_wszystkie_tr(&korzen, &korzen, &korzen);
-    cout<<"wysokosc to: ";
+    koniec=(clock()-start)/(double)CLOCKS_PER_SEC;
+    cout<<endl<<"znajdowanie_w_tr "<<koniec;
     int h=0, h2=0;
     wysokosc_tr(&korzen,&korzen,&korzen,h);
-    cout<<h<<endl;
-    for(int a=0; a<n; a++)
-    {
-        cout<<B[a]<<" ";
-        C[a]=-1;
-    }
-    cout<<endl;
+    cout<<endl<<"wysokosc_tr: "<<h<<endl;
+
+    //pomiar dla drzewa tb
     int wielkosc=0;
     stworz_C(B,C,wielkosc,0,n-1);
-    for(int a=0; a<n; a++)
-    {
-        cout<<C[a]<<" ";
-    }
+    start=clock();
+    drzewo_tb(C,&korzen2);
+    koniec=(clock()-start)/(double)CLOCKS_PER_SEC;
+    cout<<"tworzenie_tb "<<koniec;
+    wysokosc_tr(&korzen2,&korzen2,&korzen2,h2);
+    cout<<endl<<"wysokosc_tb: "<<h2<<endl;
+    //wyswietl_preorder(&korzen2);
+    start=clock();
+    znajdz_wszystkie_tr(&korzen2, &korzen2, &korzen2);
+    koniec=(clock()-start)/(double)CLOCKS_PER_SEC;
+    cout<<"znajdowanie_w_tb "<<koniec;
+
+
     usun_tr(&korzen,&korzen);
     usun_liste(&first);
-    drzewo_tb(C,&korzen2);
-    wysokosc_tr(&korzen2,&korzen2,&korzen2,h2);
-    wsk=&korzen2;
-    cout<<endl;
-    printBT("", "", wsk);
-    cout<<endl<<h2;
-    znajdz_wszystkie_tr(&korzen2, &korzen2, &korzen2);
     usun_tr(&korzen2,&korzen2);
     return 0;
 }

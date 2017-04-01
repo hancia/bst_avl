@@ -138,6 +138,17 @@ void wyszukajwliscie(item *first)
     }
 }
 
+void usun_liste(item *first)
+{
+    item *next;
+    while(first!=NULL)
+    {
+        next=first;
+        first=first->wsk;
+        delete next;
+    }
+}
+
 void dodaj_tr(lisc *obecny, int szukana, lisc *rodzic)
 {
     if(obecny == NULL)
@@ -216,6 +227,47 @@ void wysokosc_tr(lisc *dziecko, lisc *rodzic, lisc *korzen, int &h)
     }
 }
 
+void usun_tr(lisc *dziecko, lisc *rodzic)
+{
+    if(dziecko==NULL) return;
+    else
+    {
+        usun_tr(dziecko->lewy,dziecko);
+        usun_tr(dziecko->prawy,dziecko);
+        if(dziecko==rodzic->lewy)
+        {
+            delete dziecko;
+            rodzic->lewy=NULL;
+        }
+        else
+        if(dziecko==rodzic->prawy)
+        {
+            delete dziecko;
+            rodzic->prawy=NULL;
+        }
+    }
+}
+
+void stworz_C(int A[], int C[],int &i, int p, int k)
+{
+    int s =(p+k)/2;
+    if(s<p||s>k) return;
+    else
+    {
+        s =(p+k)/2;
+        C[i]=A[s];
+        i++;
+        stworz_C(A,C,i,s+1,k);
+        stworz_C(A,C,i,p,s-1);
+    }
+
+}
+
+void drzewo_tb(int C[],lisc *korzen2)
+{
+    drzewo_tr(C,korzen2);
+}
+
 int main()
 {
 
@@ -224,10 +276,10 @@ int main()
   cl[0] = 192; cl[1] = 196;
   cp[0] = 179;
     srand(time(NULL));
-    int A[n], B[n];;
+    int A[n], B[n], C[n];
     double koniec;
     item first;
-    lisc korzen;
+    lisc korzen,korzen2;
     stworz_tablice(A);
     clock_t start = clock();
     sortowanietab(A,B);
@@ -253,8 +305,30 @@ int main()
     printBT("", "", wsk);
     znajdz_wszystkie_tr(&korzen, &korzen, &korzen);
     cout<<"wysokosc to: ";
-    int h=0;
+    int h=0, h2=0;
     wysokosc_tr(&korzen,&korzen,&korzen,h);
-    cout<<h;
+    cout<<h<<endl;
+    for(int a=0; a<n; a++)
+    {
+        cout<<B[a]<<" ";
+        C[a]=-1;
+    }
+    cout<<endl;
+    int wielkosc=0;
+    stworz_C(B,C,wielkosc,0,n-1);
+    for(int a=0; a<n; a++)
+    {
+        cout<<C[a]<<" ";
+    }
+    usun_tr(&korzen,&korzen);
+    usun_liste(&first);
+    drzewo_tb(C,&korzen2);
+    wysokosc_tr(&korzen2,&korzen2,&korzen2,h2);
+    wsk=&korzen2;
+    cout<<endl;
+    printBT("", "", wsk);
+    cout<<endl<<h2;
+    znajdz_wszystkie_tr(&korzen2, &korzen2, &korzen2);
+    usun_tr(&korzen2,&korzen2);
     return 0;
 }

@@ -288,10 +288,6 @@ void stworz_C(int A[], int C[],int &i, int p, int k)
 
 }
 
-void drzewo_tb(int C[],lisc *korzen2)
-{
-    drzewo_tr(C,korzen2);
-}
 void wyswietl_preorder(lisc *obecny)
 {
     if(obecny==NULL) return;
@@ -361,7 +357,7 @@ int main()
     int wielkosc=0;
     stworz_C(B,C,wielkosc,0,n-1);
     start=clock();
-    drzewo_tb(C,&korzen2);
+    drzewo_tr(C,&korzen2);
     koniec=(clock()-start)/(double)CLOCKS_PER_SEC;
     cout<<"tworzenie_tb "<<koniec;
     wysokosc_tr(&korzen2,&korzen2,&korzen2,h2);

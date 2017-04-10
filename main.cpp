@@ -3,10 +3,9 @@
 #include <cstdlib>
 #include <fstream>
 using namespace std;
-int n=32000;
+int n=10000;
 
-
-
+//deklaracje struktur
 struct item
 {
     int wartosc;
@@ -39,6 +38,31 @@ void stworz_tablice(int A[])
     }
 }
 
+/*
+void mix(int A[])
+{
+    srand(time(0));
+    int i1, i2, x;
+    for(int i=0; i<n; i++){
+        if(n>32000){
+            i1=rand()%n+1;
+            i2=RAND_MAX+rand()%(n/2);
+            swap(A[i2], A[i1]);
+        }
+    }
+}
+
+void stworz_tablice(int A[])
+{
+    for(int i=0; i<n; i++){
+        A[i]=i;
+    }
+    mix(A);
+    mix(A);
+}
+*/
+
+//funkcje dla tablicy
 void quicksort(int A[], int p, int k)
 {
     int s, i, j;
@@ -76,7 +100,7 @@ void sortowanietab(int A[], int B[])
     quicksort(B,0,n-1);
 }
 
-void wyszukajwtab(int B[])
+void wyszukajwtab_pol(int B[])
 {
     int a;
     for(int i=0; i<n; i++)
@@ -85,6 +109,22 @@ void wyszukajwtab(int B[])
     }
 }
 
+void wyszukajwtab(int B[])
+{
+    int szukana;
+    for(int i=0; i<n; i++)
+    {
+        szukana=B[i];
+        for(int a=0; a<n; a++)
+        {
+            if (szukana==a) break;
+        }
+    }
+    return;
+}
+
+
+//funkcje dla listy
 void stworzliste(int A[], item *first)
 {
     first->wartosc=A[0];
@@ -130,6 +170,8 @@ void usun_liste(item *first)
     }
 }
 
+
+//funkcje dla drzew
 void dodaj_tr(lisc *obecny, int szukana, lisc *rodzic)
 {
     if(obecny == NULL)
@@ -229,6 +271,8 @@ void usun_tr(lisc *dziecko, lisc *rodzic)
     }
 }
 
+
+//funkcje dla drzewa zbalansowanego
 void stworz_C(int A[], int C[],int &i, int p, int k)
 {
     int s =(p+k)/2;
@@ -280,6 +324,11 @@ int main()
     wyszukajwtab(B);
     koniec=(clock()-start)/(double)CLOCKS_PER_SEC;
     cout<<endl<<"znajdowanie_w_tablicy_B "<<koniec;
+
+    start=clock();
+    wyszukajwtab_pol(B);
+    koniec=(clock()-start)/(double)CLOCKS_PER_SEC;
+    cout<<endl<<"znajdowanie_w_tablicy_B_polowkowo "<<koniec;
 
 
     //pomiar dla listy
